@@ -22,8 +22,6 @@ public class UserDTO {
 
     private String email;
 
-    private boolean active;
-
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

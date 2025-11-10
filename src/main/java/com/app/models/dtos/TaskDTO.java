@@ -24,5 +24,5 @@ public class TaskDTO {
 
     private LocalDateTime completedAt;
 
-    private int userId;
+    private Long userId;
 }
