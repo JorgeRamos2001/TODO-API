@@ -1,4 +1,4 @@
-package com.app.models.request;
+package com.app.models.requests;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
