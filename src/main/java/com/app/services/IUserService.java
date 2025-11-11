@@ -2,12 +2,14 @@ package com.app.services;
 
 import com.app.models.dtos.UserDTO;
 import com.app.models.requests.CreateUserRequest;
+import com.app.models.requests.UpdatePasswordRequest;
+import com.app.models.requests.UpdateUserRequest;
 
 import java.util.List;
 
 public interface IUserService {
-    public UserDTO getUserById(Long id);
-    public List<UserDTO> getAllUsers();
-    public UserDTO updateUser(Long id, CreateUserRequest user);
-    public void deleteUser(Long id);
+    public UserDTO getMyUser();
+    public UserDTO updateMyUser(UpdateUserRequest user);
+    public UserDTO updateMyPassword(UpdatePasswordRequest request);
+    public void deleteMyUser();
 }

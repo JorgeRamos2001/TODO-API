@@ -78,4 +78,18 @@ public class GlobalExceptionHandler {
                 .path(request.getDescription(false))
                 .build(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UpdatePasswordValidationException.class)
+    public ResponseEntity<ExceptionResponse> handleUpdatePasswordValidationException(UpdatePasswordValidationException ex, WebRequest request) {
+        log.warn("UpdatePasswordValidationException: {}", ex.getMessage(), ex);
+
+        return new ResponseEntity<>(ExceptionResponse
+                .builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message("PASSWORD VALIDATION ERROR")
+                .details(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .path(request.getDescription(false))
+                .build(), HttpStatus.BAD_REQUEST);
+    }
 }

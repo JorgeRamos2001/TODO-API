@@ -11,6 +11,8 @@ import com.app.repositories.IUserRepository;
 import com.app.services.ITaskService;
 import com.app.utils.enums.TaskStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,8 +26,8 @@ public class TaskServiceImpl implements ITaskService {
     private final TaskMapper taskMapper;
 
     @Override
-    public TaskDTO createTask(Long userId, CreateTaskRequest task) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with id: " + userId + " not found."));
+    public TaskDTO createTask(CreateTaskRequest task) {
+        User user = getAuthenticatedUser();
 
         Task taskCreated = Task
                 .builder()
@@ -41,8 +43,8 @@ public class TaskServiceImpl implements ITaskService {
     }
 
     @Override
-    public List<TaskDTO> getAllTasks(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with id: " + userId + " not found."));
+    public List<TaskDTO> getAllTasks() {
+        User user = getAuthenticatedUser();
 
         return taskRepository.findAllByUser(user)
                 .stream()
@@ -52,12 +54,14 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public TaskDTO getTaskById(Long id) {
-        return taskMapper.toTaskDTO(taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Task with id: " + id + " not found.")));
+        User user = getAuthenticatedUser();
+        return taskMapper.toTaskDTO(taskRepository.findByIdAndUser(id, user).orElseThrow(() -> new ResourceNotFoundException("Task with id: " + id + " not found.")));
     }
 
     @Override
     public TaskDTO updateTask(Long id, CreateTaskRequest task) {
-        Task taskEntity = taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Task with id: " + id + " not found."));
+        User user = getAuthenticatedUser();
+        Task taskEntity = taskRepository.findByIdAndUser(id, user).orElseThrow(() -> new ResourceNotFoundException("Task with id: " + id + " not found."));
 
         taskEntity.setTitle(task.getTitle());
         taskEntity.setDescription(task.getDescription());
@@ -67,7 +71,8 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public TaskDTO completeTask(Long id) {
-        Task taskEntity = taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Task with id: " + id + " not found."));
+        User user = getAuthenticatedUser();
+        Task taskEntity = taskRepository.findByIdAndUser(id, user).orElseThrow(() -> new ResourceNotFoundException("Task with id: " + id + " not found."));
 
         taskEntity.setStatus(TaskStatus.COMPLETED);
         taskEntity.setCompletedAt(LocalDateTime.now());
@@ -77,7 +82,14 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public void deleteTask(Long id) {
-        Task taskEntity = taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Task with id: " + id + " not found."));
+        User user = getAuthenticatedUser();
+        Task taskEntity = taskRepository.findByIdAndUser(id, user).orElseThrow(() -> new ResourceNotFoundException("Task with id: " + id + " not found."));
         taskRepository.delete(taskEntity);
+    }
+
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final String email = authentication.getName();
+        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User with email: " + email + " not found."));
     }
 }
