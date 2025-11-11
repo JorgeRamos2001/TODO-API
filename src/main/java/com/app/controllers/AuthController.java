@@ -46,15 +46,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody CreateUserRequest request) {
+    public ResponseEntity<Void> register(@Valid @RequestBody CreateUserRequest request) {
         authService.registerUser(request);
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         final String token = jwtService.generateToken(userDetails);
 
-        return new ResponseEntity<>(AuthResponse
-                .builder()
-                .token(token)
-                .build(), HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
