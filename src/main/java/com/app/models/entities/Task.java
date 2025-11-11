@@ -1,6 +1,7 @@
 package com.app.models.entities;
 
 import com.app.utils.enums.TaskStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,6 +36,7 @@ public class Task {
     @Column(name = "completed_at", nullable = true)
     private LocalDateTime completedAt;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

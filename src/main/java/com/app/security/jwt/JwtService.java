@@ -15,10 +15,8 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String SECRET_KEY;
-    @Value("${jwt.expiration}")
-    private Long EXPIRATION_TIME;
+    private static final String SECRET_KEY = "6B5970337336763979244226452948404D635166546A576E5A72347537782141";
+    private static final int EXPIRATION_TIME = 1000 * 60 * 60 * 24;
 
     public String generateToken(UserDetails userDetails) {
         return Jwts
